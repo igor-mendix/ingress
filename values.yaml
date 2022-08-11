@@ -1,0 +1,29 @@
+awslbc:
+#  Must be set when calling helm
+#  clusterName: <cluster name>
+ image:
+   repository: 602401143452.dkr.ecr.eu-central-1.amazonaws.com/amazon/aws-load-balancer-controller
+ serviceAccount:
+   create: false
+   name: aws-load-balancer-controller
+#   Must be set when calling helm and `create` is set to `true`
+#   annotations:
+#     eks.amazonaws.com/role-arn: <ARN of the role>
+ ingressClass: alb
+ watchNamespace: ingress
+
+nginx:
+  fullnameOverride: nginx
+  controller:
+    ingressClassResource:
+      enabled: true
+      default: false
+    admissionWebhooks:
+      enabled: false
+    autoscaling:
+      enabled: true
+    service:
+      type: ClusterIP
+
+# Must be set
+#targetGroupARN: <arn>

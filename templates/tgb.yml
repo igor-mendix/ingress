@@ -1,0 +1,15 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  labels:
+    elbv2.k8s.aws/cluster: {{ .Values.awslbc.clusterName }}
+    ingress.k8s.aws/stack: {{ printf "%s-%s" .Values.awslbc.clusterName .Values.nginx.fullnameOverride }}
+  name: {{ printf "%s-%s-%s" .Values.awslbc.clusterName .Values.nginx.fullnameOverride .Values.nginx.controller.name }}
+  namespace: ingress
+spec:
+  ipAddressType: ipv4
+  serviceRef:
+    name: {{ printf "%s-%s" .Values.nginx.fullnameOverride .Values.nginx.controller.name }}
+    port: 80
+  targetGroupARN: {{ .Values.targetGroupARN }}
+  targetType: ip

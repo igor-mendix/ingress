@@ -1,0 +1,25 @@
+{{- $fullName := include "ingress.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "ingress.labels" . | nindent 4 }}
+  annotations:
+    alb.ingress.kubernetes.io/group.name: {{ printf "%s-%s" .Values.awslbc.clusterName .Values.nginx.fullnameOverride }}
+    alb.ingress.kubernetes.io/load-balancer-name: {{ printf "%s-alb" .Values.awslbc.clusterName }}
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+spec:
+  ingressClassName: {{ .Values.awslbc.ingressClass }}
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: {{ printf "%s-%s" .Values.nginx.fullnameOverride .Values.nginx.controller.name }}
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
